@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>New Tab</title>
+  <link rel="stylesheet" href="newtab.css">
+</head>
+<body class="theme-dark">
+  <!-- Dynamic Wallpaper Container (Sky Gradient, Built-in Themes or Custom Media) -->
+  <div id="wallpaper-container">
+    <div id="sky-gradient" class="sky-layer"></div>
+    <div id="theme-layer" class="theme-layer"></div>
+    <video id="wallpaper-video" class="media-layer" autoplay muted loop playsinline></video>
+    <div id="wallpaper-image" class="media-layer"></div>
+  </div>
+
+  <!-- Dynamic Weather Particle Canvas -->
+  <canvas id="weather-canvas"></canvas>
+
+  <!-- Top Bar: Focus Mode, Ambient Sound (Left) & Theme Switcher, Weather Info (Right) -->
+  <header class="top-bar">
+    <div class="top-left">
+      <button id="focus-toggle-btn" class="pill-btn focus-pill" title="Toggle Focus Mode">
+        <span class="focus-dot"></span>
+        <span id="focus-status-text">Focus: OFF</span>
+      </button>
+
+      <div class="popover-anchor">
+        <button id="ambient-sound-btn" class="pill-btn ambient-pill" title="Calm Focus Ambient Sound">
+          <span>🎧</span>
+          <span id="ambient-sound-text">Sound: OFF</span>
+        </button>
+        <div id="ambient-sound-popover" class="glass-popover ambient-popover">
+          <div class="popover-title">Calm Ambient Sound</div>
+          <div class="ambient-sound-options">
+            <button class="ambient-sound-opt" data-sound="rain">🌧️ Soft Rain</button>
+            <button class="ambient-sound-opt" data-sound="ocean">🌊 Ocean Surf</button>
+            <button class="ambient-sound-opt" data-sound="brown_noise">☕ Brown Noise</button>
+            <button class="ambient-sound-opt" data-sound="drone">🧘 Zen Drone</button>
+          </div>
+          <div class="popover-volume-row">
+            <span>Volume</span>
+            <input type="range" id="ambient-volume-slider" min="0" max="1" step="0.05" value="0.35">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="top-right">
+      <div class="popover-anchor">
+        <button id="theme-switcher-btn" class="pill-btn theme-pill" title="Change Wallpaper Theme">
+          <span>✨</span>
+          <span id="theme-name-label">Wallpaper</span>
+        </button>
+        <div id="theme-switcher-popover" class="glass-popover theme-popover">
+          <div class="popover-title">Choose Wallpaper Theme</div>
+          <div class="theme-filter-row">
+            <button class="theme-filter-btn active" data-category="all">All</button>
+            <button class="theme-filter-btn" data-category="animated">Live Video</button>
+            <button class="theme-filter-btn" data-category="procedural">Shaders</button>
+            <button class="theme-filter-btn" data-category="photo">4K Photos</button>
+          </div>
+          <div id="theme-switcher-grid" class="theme-switcher-grid"></div>
+          <div class="popover-url-row">
+            <input type="text" id="popover-web-url-input" class="input-text" placeholder="Paste image, GIF or video URL...">
+            <button id="btn-popover-apply-url" class="btn btn-primary-sm">Apply</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="weather-pill" class="pill-btn weather-pill" title="Current Weather">
+        <span id="weather-icon" class="weather-icon">☁️</span>
+        <span id="weather-temp" class="weather-temp">--°C</span>
+        <span id="weather-city-label" class="weather-city">Loading...</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Central Anchor Section: Greeting, Clock, Date, Top Task & Spotlight -->
+  <main id="center-stage" class="center-stage">
+    <div id="greeting" class="greeting">Good morning, Dhruv</div>
+    <div id="clock" class="clock">09:42</div>
+    <div id="date" class="date">Friday, 14 November</div>
+
+    <!-- Top Task Line -->
+    <div id="top-task-container" class="top-task-container">
+      <button id="top-task-check" class="task-checkbox" aria-label="Mark task complete">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+          <polyline points="20 6 9 17 4 12"/>
+        </svg>
+      </button>
+      <span id="top-task-label" class="top-task-label">+ Add a focus task for today</span>
+    </div>
+
+    <!-- Spotlight Search -->
+    <div id="spotlight-wrapper" class="spotlight-wrapper">
+      <div class="spotlight-input-box">
+        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input type="text" id="spotlight-input" placeholder="Search bookmarks or type a URL..." autocomplete="off" spellcheck="false">
+      </div>
+      <div id="spotlight-results" class="spotlight-results"></div>
+    </div>
+  </main>
+
+  <!-- Bottom Mac-Style Dock -->
+  <footer id="dock-container" class="dock-container">
+    <div class="dock-shell">
+      <!-- Left: Top 5 Visited Sites -->
+      <div id="dock-top-sites" class="dock-section dock-left"></div>
+
+      <div class="dock-divider"></div>
+
+      <!-- Right: Flyout Panel Tools -->
+      <div class="dock-section dock-right">
+        <button class="dock-item" id="dock-btn-tasks" data-panel="panel-tasks" title="Tasks">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+          <span id="tasks-badge" class="dock-badge" style="display: none;">0</span>
+        </button>
+        <button class="dock-item" id="dock-btn-history" data-panel="panel-history" title="Recently Opened">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        </button>
+        <button class="dock-item" id="dock-btn-readlater" data-panel="panel-readlater" title="Read Later">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+        </button>
+        <button class="dock-item" id="dock-btn-workspaces" data-panel="panel-workspaces" title="Workspaces">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        </button>
+        <button class="dock-item" id="dock-btn-screentime" data-panel="panel-screentime" title="Screen Time">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg>
+        </button>
+        <button class="dock-item" id="dock-btn-snoozed" data-panel="panel-snoozed" title="Snoozed Tabs">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2"/><path d="M5 3L2 6"/><path d="M22 6l-3-3"/></svg>
+        </button>
+        <button class="dock-item" id="dock-btn-settings" data-panel="panel-settings" title="Settings">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        </button>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Flyout Panels Above Dock -->
+  <div id="flyout-scrim" class="flyout-scrim"></div>
+
+  <!-- 1. Tasks Panel -->
+  <div id="panel-tasks" class="glass-panel">
+    <div class="panel-header">
+      <div class="task-tabs">
+        <button class="task-tab-btn active" data-col="today">Today</button>
+        <button class="task-tab-btn" data-col="later">Later</button>
+        <button class="task-tab-btn" data-col="done">Done</button>
+      </div>
+      <button id="btn-clear-done" class="panel-link-btn" style="display: none;">Clear Done</button>
+    </div>
+    <div class="task-input-bar">
+      <input type="text" id="task-new-input" placeholder="+ Add a task... (Press Enter)">
+    </div>
+    <div id="task-list" class="panel-body task-list"></div>
+  </div>
+
+  <!-- 2. Recently Opened Panel -->
+  <div id="panel-history" class="glass-panel">
+    <div class="panel-header">
+      <input type="text" id="history-search-input" placeholder="Search recent pages...">
+      <div class="segmented-control">
+        <button class="seg-btn active" id="btn-hist-pages">Pages</button>
+        <button class="seg-btn" id="btn-hist-sites">Sites</button>
+      </div>
+    </div>
+    <div id="history-just-closed" class="just-closed-section"></div>
+    <div id="history-timeline" class="panel-body history-timeline"></div>
+  </div>
+
+  <!-- 3. Read Later Panel -->
+  <div id="panel-readlater" class="glass-panel">
+    <div class="panel-header">
+      <h3>Reading List</h3>
+      <span id="readlater-count" class="badge-count">0 articles</span>
+    </div>
+    <div id="readlater-list" class="panel-body readlater-list"></div>
+  </div>
+
+  <!-- 4. Workspaces Panel -->
+  <div id="panel-workspaces" class="glass-panel">
+    <div class="panel-header">
+      <h3>Workspaces</h3>
+    </div>
+    <div class="workspace-creator">
+      <input type="text" id="workspace-name-input" placeholder="Workspace name...">
+      <button id="btn-save-workspace" class="btn btn-primary-sm">Save Window</button>
+    </div>
+    <div id="workspace-list" class="panel-body workspace-list"></div>
+  </div>
+
+  <!-- 5. Screen Time Panel -->
+  <div id="panel-screentime" class="glass-panel">
+    <div class="panel-header">
+      <h3>Today's Focus & Screen Time</h3>
+      <span id="total-screentime-label" class="badge-count">0m active</span>
+    </div>
+    <div id="screentime-chart" class="panel-body screentime-chart"></div>
+  </div>
+
+  <!-- 6. Snoozed Tabs Panel -->
+  <div id="panel-snoozed" class="glass-panel">
+    <div class="panel-header">
+      <h3>Snoozed Tabs</h3>
+      <span id="snoozed-count-badge" class="badge-count">0</span>
+    </div>
+    <div id="snoozed-list" class="panel-body snoozed-list"></div>
+  </div>
+
+  <!-- Tab Overload Notification Banner -->
+  <div id="tab-overload-bar" class="tab-overload-bar">
+    <span id="tab-overload-msg">You have 18 tabs open.</span>
+    <div class="overload-actions">
+      <button id="btn-overload-clean" class="btn btn-primary-sm">Clean Up Now</button>
+      <button id="btn-overload-dismiss" class="btn btn-ghost-sm">Dismiss</button>
+    </div>
+  </div>
+
+  <!-- Centered Mac System Settings Modal -->
+  <div id="settings-modal" class="settings-modal-backdrop">
+    <div class="settings-window">
+      <!-- Left Sidebar -->
+      <aside class="settings-sidebar">
+        <div class="mac-window-controls">
+          <span class="mac-btn close" id="settings-btn-close"></span>
+          <span class="mac-btn min"></span>
+          <span class="mac-btn max"></span>
+        </div>
+        <div class="settings-nav">
+          <button class="nav-item active" data-tab="tab-look">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2v20"/><path d="M12 12l7-7"/></svg>
+            <span>Look & Feel</span>
+          </button>
+          <button class="nav-item" data-tab="tab-weather">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/></svg>
+            <span>Weather</span>
+          </button>
+          <button class="nav-item" data-tab="tab-focus">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
+            <span>Focus Mode</span>
+          </button>
+          <button class="nav-item" data-tab="tab-tabs">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h18v18H3z"/><path d="M3 9h18"/></svg>
+            <span>Tabs & Hygiene</span>
+          </button>
+          <button class="nav-item" data-tab="tab-shortcuts">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
+            <span>Text Shortcuts</span>
+          </button>
+          <button class="nav-item" data-tab="tab-websites">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+            <span>On Websites</span>
+          </button>
+          <button class="nav-item" data-tab="tab-ai">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3L12 3Z"/></svg>
+            <span>AI Mode (Groq)</span>
+          </button>
+        </div>
+      </aside>
+
+      <!-- Right Main Content Area -->
+      <section class="settings-content">
+        <!-- 1. Look & Feel -->
+        <div class="settings-pane active" id="tab-look">
+          <h2>Look & Feel</h2>
+          <div class="setting-row">
+            <div class="setting-meta">
+              <label>Your Name</label>
+              <p>Displayed in the greeting on your new tab.</p>
+            </div>
+            <input type="text" id="setting-user-name" class="input-text" placeholder="Dhruv">
+          </div>
+          <div class="setting-row">
+            <div class="setting-meta">
+              <label>24-Hour Clock</label>
+              <p>Display military time format (e.g. 14:30).</p>
+            </div>
+            <label class="switch"><input type="checkbox" id="setting-military-time"><span class="slider"></span></label>
+          </div>
+          <div class="setting-row">
+            <div class="setting-meta">
+              <label>Show Seconds</label>
+              <p>Display seconds on the central clock.</p>
+            </div>
+            <label class="switch"><input type="checkbox" id="setting-show-seconds"><span class="slider"></span></label>
+          </div>
+          <div class="setting-group">
+            <label>Curated Aesthetic & Animated Live Wallpapers</label>
+            <p class="section-desc">Select an animated live video loop, procedural shader theme, or 4K photography from the internet.</p>
+            <div class="theme-filter-row" style="margin-bottom: 8px;">
+              <button class="settings-theme-filter-btn active" data-category="all">All (21)</button>
+              <button class="settings-theme-filter-btn" data-category="animated">🎬 Live Video Loops</button>
+              <button class="settings-theme-filter-btn" data-category="procedural">✨ Shaders</button>
+              <button class="settings-theme-filter-btn" data-category="photo">🖼️ 4K Photos</button>
+            </div>
+            <div id="settings-theme-gallery" class="settings-theme-gallery"></div>
+          </div>
+          <div class="setting-row" style="flex-direction: column; align-items: flex-start; gap: 8px;">
+            <div class="setting-meta">
+              <label>Add Wallpaper from the Internet (URL)</label>
+              <p>Paste any direct image link, animated GIF, or MP4/WebM video URL from anywhere online.</p>
+            </div>
+            <div style="display: flex; gap: 8px; width: 100%;">
+              <input type="text" id="setting-web-url-input" class="input-text" style="flex: 1;" placeholder="https://... (.mp4, .webm, .gif, .jpg, .png)">
+              <button id="btn-setting-apply-web-url" class="btn btn-primary-sm">Apply from Web</button>
+            </div>
+          </div>
+          <div class="setting-row" id="wallpaper-upload-box" style="flex-direction: column; align-items: flex-start; gap: 12px;">
+            <div class="setting-meta">
+              <label>Upload Offline Media (File)</label>
+              <p>Max 25MB. Saved locally on your laptop in IndexedDB (remembers last 8).</p>
+            </div>
+            <input type="file" id="wallpaper-file-input" accept="image/*,video/mp4,video/webm">
+            <div id="wallpaper-history-grid" class="wallpaper-history-grid"></div>
+          </div>
+        </div>
+
+        <!-- 2. Weather -->
+        <div class="settings-pane" id="tab-weather">
+          <h2>Weather</h2>
+          <div class="setting-row">
+            <div class="setting-meta">
+              <label>Your City</label>
+              <p>Cached every 30 minutes. No API key needed.</p>
+            </div>
+            <div style="display: flex; gap: 8px;">
+              <input type="text" id="setting-weather-city" class="input-text" placeholder="London">
+              <button id="btn-save-city" class="btn btn-primary-sm">Update</button>
+            </div>
+          </div>
+          <div class="setting-row">
+            <div class="setting-meta">
+              <label>Temperature Units</label>
+              <p>Choose Celsius or Fahrenheit.</p>
+            </div>
+            <div class="segmented-control">
+              <button class="seg-btn active" id="btn-unit-c">°C</button>
+              <button class="seg-btn" id="btn-unit-f">°F</button>
+            </div>
+          </div>
+          <div class="setting-row">
+            <div class="setting-meta">
+              <label>Weather Particle Effects</label>
+              <p>Animate rain, snow, lightning, and night stars.</p>
+            </div>
+            <label class="switch"><input type="checkbox" id="setting-weather-particles" checked><span class="slider"></span></label>
+          </div>
+          <div class="setting-row">
+            <div class="setting-meta">
+              <label>Preview Weather Effects</label>
+              <p>Inspect animations immediately.</p>
+            </div>
+            <div class="preview-btn-row">
+              <button class="btn btn-ghost-sm" id="test-rain">Rain</button>
+              <button class="btn btn-ghost-sm" id="test-snow">Snow</button>
+              <button class="btn btn-ghost-sm" id="test-thunder">Thunder</button>
+              <button class="btn btn-ghost-sm" id="test-stars">Stars</button>
+              <button class="btn btn-ghost-sm" id="test-clear">Clear</button>
+            </div>
+          </div>
+          <div class="setting-row">
+            <div class="setting-meta">
+              <label>Soft Rainy Tint on Websites</label>
+              <p>Subtle atmospheric tint on webpages when raining.</p>
+            </div>
+            <label class="switch"><input type="checkbox" id="setting-weather-tint" checked><span class="slider"></span></label>
+          </div>
+        </div>
+
+        <!-- 3. Focus Mode -->
+        <div class="settings-pane" id="tab-focus">
+          <h2>Focus Mode</h2>
+          <div class="setting-row">
+            <div class="setting-meta">
+              <label>Enable Focus Mode</label>
+              <p>Blocks distraction sites and redirects to commitment.</p>
+            </div>
+            <label class="switch"><input type="checkbox" id="setting-focus-toggle"><span class="slider"></span></label>
+          </div>
+          <div class="setting-group">
+            <label>Blocked Domains</label>
+            <div class="site-add-box">
+              <input type="text" id="focus-new-domain" class="input-text" placeholder="e.g. reddit.com">
+              <button id="btn-add-blocked-site" class="btn btn-primary-sm">Add Domain</button>
+            </div>
+            <div id="blocked-sites-chips" class="chips-container"></div>
+          </div>
+        </div>
+
+        <!-- 4. Tabs & Hygiene -->
+        <div class="settings-pane" id="tab-tabs">
+          <h2>Tabs & Hygiene</h2>
+          <div class="setting-row">
+            <div class="setting-meta">
+              <label>Tab Overload Threshold</label>
+              <p>Warns gently when open tabs exceed this limit.</p>
+            </div>
+            <input type="number" id="setting-tab-threshold" class="input-text input-num" min="5" max="100" value="15">
+          </div>
+          <div class="setting-row">
+            <div class="setting-meta">
+              <label>Auto-Group on Cleanup</label>
+              <p>Automatically group tabs by website domain.</p>
+            </div>
+            <label class="switch"><input type="checkbox" id="setting-auto-group" checked><span class="slider"></span></label>
+          </div>
+          <div class="setting-row">
+            <div class="setting-meta">
+              <label>Preserve Pinned Tabs</label>
+              <p>Never close or alter pinned tabs during cleanup.</p>
+            </div>
+            <label class="switch"><input type="checkbox" id="setting-preserve-pinned" checked><span class="slider"></span></label>
+          </div>
+          <div class="setting-row">
+            <div class="setting-meta">
+              <label>Clean Up Tabs Now</label>
+              <p>Instant canonical deduplication and grouping.</p>
+            </div>
+            <button id="btn-instant-cleanup" class="btn btn-primary-sm">Clean Up Tabs</button>
+          </div>
+        </div>
+
+        <!-- 5. Text Shortcuts -->
+        <div class="settings-pane" id="tab-shortcuts">
+          <h2>Text Shortcuts</h2>
+          <p class="section-desc">Type a trigger in any web text box followed by Space to expand.</p>
+          <div class="shortcut-add-row">
+            <input type="text" id="short-trigger-input" class="input-text" placeholder="/trigger (e.g. /zoom)">
+            <input type="text" id="short-replace-input" class="input-text" placeholder="Replacement text (supports {date}, {time})">
+            <button id="btn-add-shortcut" class="btn btn-primary-sm">Add</button>
+          </div>
+          <div id="shortcuts-table" class="shortcuts-table"></div>
+        </div>
+
+        <!-- 6. On Websites -->
+        <div class="settings-pane" id="tab-websites">
+          <h2>On Websites</h2>
+          <div class="setting-row">
+            <div class="setting-meta">
+              <label>Edge Handle Position</label>
+              <p>Choose default screen edge for the quick toolbar.</p>
+            </div>
+            <div class="segmented-control">
+              <button class="seg-btn active" id="btn-edge-right">Right Edge</button>
+              <button class="seg-btn" id="btn-edge-left">Left Edge</button>
+            </div>
+          </div>
+          <div class="setting-row">
+            <div class="setting-meta">
+              <label>Image Magnifier</label>
+              <p>Show larger preview when hovering small images.</p>
+            </div>
+            <label class="switch"><input type="checkbox" id="setting-image-magnifier" checked><span class="slider"></span></label>
+          </div>
+          <div class="setting-row">
+            <div class="setting-meta">
+              <label>Table to Excel Export</label>
+              <p>Enable 1-click CSV export on webpage tables.</p>
+            </div>
+            <label class="switch"><input type="checkbox" id="setting-table-export" checked><span class="slider"></span></label>
+          </div>
+        </div>
+
+        <!-- 7. AI Mode (Groq) -->
+        <div class="settings-pane" id="tab-ai">
+          <h2>AI Mode (Groq)</h2>
+          <p class="section-desc">Paste your free Groq API key to unlock smart tab grouping, double-click dictionary definitions, and screen OCR text extraction. Everything stays on your laptop.</p>
+          <div class="setting-group">
+            <label>Groq API Key</label>
+            <div style="display: flex; gap: 8px;">
+              <input type="password" id="setting-groq-key" class="input-text" placeholder="gsk_...">
+              <button id="btn-verify-groq" class="btn btn-primary-sm">Verify Key</button>
+            </div>
+            <span id="groq-status-msg" class="helper-text">AI is currently OFF.</span>
+          </div>
+          <div class="setting-row">
+            <div class="setting-meta">
+              <label>AI Tab Grouping</label>
+              <p>Groups open tabs by project intent instead of domain.</p>
+            </div>
+            <span id="ai-status-badge" class="badge-tag">Requires Key</span>
+          </div>
+          <div class="setting-row">
+            <div class="setting-meta">
+              <label>Screen OCR Extraction</label>
+              <p>Drag a box over any video or image to copy text.</p>
+            </div>
+            <span class="badge-tag">Groq Vision</span>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <!-- Root Controller Script -->
+  <script type="module" src="newtab.js"></script>
+</body>
+</html>
+

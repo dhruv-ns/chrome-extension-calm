@@ -1,0 +1,14 @@
+/* Aura Tab - Ambient Weather Tint Stylesheet */
+#aura-weather-tint-overlay {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  pointer-events: none !important;
+  z-index: 2147483620 !important;
+  background: rgba(20, 35, 60, 0.04) !important;
+  mix-blend-mode: multiply !important;
+  transition: opacity 1s ease !important;
+}
+

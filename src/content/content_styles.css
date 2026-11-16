@@ -1,0 +1,428 @@
+/* Aura Tab - In-Page Superpowers Styling */
+
+/* Edge Handle & Toolbar */
+#aura-edge-handle-root {
+  position: fixed;
+  z-index: 2147483640;
+  top: 200px;
+  right: 0;
+  display: flex;
+  align-items: center;
+  transition: right 0.2s cubic-bezier(0.16, 1, 0.3, 1), left 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  user-select: none;
+}
+
+#aura-edge-handle-root.aura-side-left {
+  right: auto;
+  left: 0;
+}
+
+.aura-handle-capsule {
+  width: 8px;
+  height: 48px;
+  background: rgba(30, 32, 40, 0.65);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 6px 0 0 6px;
+  cursor: grab;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.aura-side-left .aura-handle-capsule {
+  border-radius: 0 6px 6px 0;
+}
+
+.aura-handle-capsule:hover {
+  background: rgba(99, 102, 241, 0.85);
+  width: 12px;
+}
+
+.aura-toolbar-panel {
+  display: none;
+  flex-direction: column;
+  background: rgba(22, 24, 30, 0.85);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 14px;
+  padding: 6px;
+  gap: 4px;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.5), 0 0 1px 1px rgba(255, 255, 255, 0.1);
+  margin-right: 6px;
+  animation: auraSlideIn 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.aura-side-left .aura-toolbar-panel {
+  margin-right: 0;
+  margin-left: 6px;
+}
+
+#aura-edge-handle-root:hover .aura-toolbar-panel,
+#aura-edge-handle-root.aura-expanded .aura-toolbar-panel {
+  display: flex;
+}
+
+@keyframes auraSlideIn {
+  from { opacity: 0; transform: scale(0.92); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.aura-tool-btn {
+  position: relative;
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.75);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.aura-tool-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #FFFFFF;
+}
+
+.aura-tool-btn svg {
+  width: 17px;
+  height: 17px;
+}
+
+/* Tooltips */
+.aura-tool-btn::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  right: 44px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(15, 17, 23, 0.95);
+  color: #FFFFFF;
+  font-size: 11px;
+  font-weight: 500;
+  padding: 4px 8px;
+  border-radius: 6px;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+.aura-side-left .aura-tool-btn::after {
+  right: auto;
+  left: 44px;
+}
+
+.aura-tool-btn:hover::after {
+  opacity: 1;
+}
+
+/* Snooze Flyout Menu */
+.aura-snooze-flyout {
+  display: none;
+  position: absolute;
+  right: 44px;
+  top: 0;
+  background: rgba(22, 24, 30, 0.95);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 12px;
+  padding: 6px;
+  width: 150px;
+  box-shadow: 0 16px 36px rgba(0,0,0,0.5);
+  z-index: 10;
+}
+
+.aura-side-left .aura-snooze-flyout {
+  right: auto;
+  left: 44px;
+}
+
+.aura-snooze-flyout.aura-visible {
+  display: flex;
+  flex-direction: column;
+}
+
+.aura-snooze-opt {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.85);
+  padding: 8px 10px;
+  text-align: left;
+  font-size: 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.aura-snooze-opt:hover {
+  background: rgba(99, 102, 241, 0.3);
+  color: #FFFFFF;
+}
+
+/* Toast Notifications */
+.aura-toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 2147483647;
+  background: rgba(22, 24, 30, 0.92);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  color: #FFFFFF;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 12px;
+  padding: 12px 18px;
+  font-size: 13px;
+  font-weight: 500;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  animation: auraToastIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes auraToastIn {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Sticky Notes */
+.aura-sticky-note {
+  position: fixed;
+  z-index: 2147483630;
+  width: 230px;
+  min-height: 170px;
+  border-radius: 14px;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.4), 0 0 1px 1px rgba(255, 255, 255, 0.1);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  transition: box-shadow 0.2s;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+.aura-sticky-note.aura-note-amber {
+  background: rgba(245, 158, 11, 0.22);
+  border: 1px solid rgba(245, 158, 11, 0.4);
+}
+
+.aura-sticky-note.aura-note-emerald {
+  background: rgba(16, 185, 129, 0.22);
+  border: 1px solid rgba(16, 185, 129, 0.4);
+}
+
+.aura-sticky-note.aura-note-azure {
+  background: rgba(59, 130, 246, 0.22);
+  border: 1px solid rgba(59, 130, 246, 0.4);
+}
+
+.aura-sticky-note.aura-note-obsidian {
+  background: rgba(28, 28, 30, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.aura-sticky-header {
+  height: 30px;
+  padding: 0 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: grab;
+  background: rgba(0, 0, 0, 0.15);
+}
+
+.aura-sticky-dots {
+  display: flex;
+  gap: 5px;
+}
+
+.aura-sticky-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.aura-sticky-dot.amber { background: #F59E0B; }
+.aura-sticky-dot.emerald { background: #10B981; }
+.aura-sticky-dot.azure { background: #3B82F6; }
+.aura-sticky-dot.obsidian { background: #4B5563; }
+
+.aura-sticky-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.aura-sticky-action-btn {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.6);
+  cursor: pointer;
+  padding: 2px;
+  font-size: 13px;
+  line-height: 1;
+}
+
+.aura-sticky-action-btn:hover {
+  color: #FFFFFF;
+}
+
+.aura-sticky-body {
+  flex: 1;
+  padding: 10px;
+}
+
+.aura-sticky-textarea {
+  width: 100%;
+  height: 100%;
+  min-height: 120px;
+  background: transparent;
+  border: none;
+  outline: none;
+  resize: both;
+  color: #FFFFFF;
+  font-size: 13px;
+  font-family: inherit;
+  line-height: 1.4;
+}
+
+/* Image Magnifier Popover */
+.aura-image-magnifier {
+  position: fixed;
+  z-index: 2147483645;
+  background: rgba(18, 20, 26, 0.95);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 14px;
+  padding: 6px;
+  box-shadow: 0 20px 48px rgba(0,0,0,0.6);
+  pointer-events: none;
+  max-width: 480px;
+  max-height: 480px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: auraZoomIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.aura-image-magnifier img {
+  max-width: 100%;
+  max-height: 460px;
+  border-radius: 8px;
+  object-fit: contain;
+}
+
+@keyframes auraZoomIn {
+  from { opacity: 0; transform: scale(0.92); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* Table Export Button Overlay */
+.aura-table-export-btn {
+  position: absolute;
+  z-index: 2147483600;
+  background: #6366F1;
+  color: #FFFFFF;
+  border: none;
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.15s ease;
+}
+
+.aura-table-export-btn:hover {
+  background: #4F46E5;
+  transform: translateY(-1px);
+}
+
+/* Screen OCR Drag Bounding Box */
+#aura-ocr-canvas-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 2147483646;
+  cursor: crosshair;
+  background: rgba(0, 0, 0, 0.35);
+}
+
+.aura-ocr-selection {
+  position: absolute;
+  border: 2px dashed #6366F1;
+  background: rgba(99, 102, 241, 0.15);
+  box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.4);
+  pointer-events: none;
+}
+
+/* AI Word Definition Popover */
+.aura-dict-popover {
+  position: fixed;
+  z-index: 2147483642;
+  background: rgba(22, 24, 30, 0.94);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 14px;
+  padding: 14px 16px;
+  max-width: 300px;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  animation: auraSlideIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.aura-dict-word {
+  font-size: 14px;
+  font-weight: 700;
+  color: #FFFFFF;
+  margin-bottom: 4px;
+}
+
+.aura-dict-def {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.85);
+  line-height: 1.4;
+  margin-bottom: 8px;
+}
+
+.aura-dict-example {
+  font-size: 11px;
+  font-style: italic;
+  color: rgba(165, 180, 252, 0.9);
+  line-height: 1.3;
+}
+
+/* Ambient Rainy Weather Tint Overlay */
+#aura-weather-tint-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 2147483620;
+  background: rgba(20, 35, 60, 0.04);
+  mix-blend-mode: multiply;
+  transition: opacity 1s ease;
+}
+

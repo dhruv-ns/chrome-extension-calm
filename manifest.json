@@ -1,0 +1,82 @@
+{
+  "manifest_version": 3,
+  "name": "Aura Tab",
+  "version": "1.0.0",
+  "description": "A calm, elegant command center for your new tab and subtle superpowers on every webpage.",
+  "chrome_url_overrides": {
+    "newtab": "src/newtab/newtab.html"
+  },
+  "permissions": [
+    "storage",
+    "tabs",
+    "tabGroups",
+    "bookmarks",
+    "topSites",
+    "history",
+    "alarms",
+    "activeTab",
+    "scripting",
+    "idle"
+  ],
+  "host_permissions": [
+    "https://api.open-meteo.com/*",
+    "https://geocoding-api.open-meteo.com/*",
+    "https://api.groq.com/*",
+    "<all_urls>"
+  ],
+  "background": {
+    "service_worker": "src/background/service_worker.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": [
+        "src/content/edge_handle.js",
+        "src/content/sticky_notes.js",
+        "src/content/table_exporter.js",
+        "src/content/text_expander.js",
+        "src/content/image_previewer.js",
+        "src/content/weather_tint.js",
+        "src/content/ai_superpowers.js",
+        "src/content/content_bundle.js"
+      ],
+      "css": ["src/content/content_styles.css"],
+      "run_at": "document_end"
+    }
+  ],
+  "action": {
+    "default_icon": {
+      "16": "assets/icons/icon16.png",
+      "48": "assets/icons/icon48.png",
+      "128": "assets/icons/icon128.png"
+    },
+    "default_title": "Clean Up Tabs & Aura Controls"
+  },
+  "commands": {
+    "cleanup-tabs": {
+      "suggested_key": {
+        "default": "Alt+Shift+C",
+        "mac": "Alt+Shift+C"
+      },
+      "description": "Trigger instant tab deduplication and grouping"
+    },
+    "toggle-sidebar-handle": {
+      "suggested_key": {
+        "default": "Alt+Shift+S",
+        "mac": "Alt+Shift+S"
+      },
+      "description": "Toggle Aura quick toolbar on current webpage"
+    }
+  },
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "assets/fonts/*",
+        "assets/icons/*",
+        "src/content/*"
+      ],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}
